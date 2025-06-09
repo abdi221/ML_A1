@@ -1,5 +1,8 @@
 from abc import ABC, abstractmethod
-
+import numpy as np
+from sklearn import datasets as ds
+from collections import Counter
+import math
 class MachineLearningModel(ABC):
     """
     Abstract base class for machine learning models.
@@ -46,6 +49,12 @@ class MachineLearningModel(ABC):
         """
         pass
 
+def euclidean_distance(point_x, point_y):
+    distance = 0.0
+    for i in range(len(point_x)):
+        distance += (point_x[i]-point_y[i]) ** 2
+    return math.sqrt(distance)
+
 class KNNRegressionModel(MachineLearningModel):
     """
     Class for KNN regression model.
@@ -77,6 +86,8 @@ class KNNRegressionModel(MachineLearningModel):
         None
         """
         #--- Write your code here ---#
+        self.X_train = X 
+        self.y_train = y
 
     def predict(self, X):
         """
@@ -90,6 +101,8 @@ class KNNRegressionModel(MachineLearningModel):
         predictions (array-like): Predicted values.
         """
         #--- Write your code here ---#
+        predicted_labels = [self._predict(x) for x in X]
+        return
 
     def evaluate(self, y_true, y_predicted):
         """
