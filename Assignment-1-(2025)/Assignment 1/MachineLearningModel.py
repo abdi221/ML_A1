@@ -159,6 +159,8 @@ class KNNClassificationModel(MachineLearningModel):
         None
         """
         #--- Write your code here ---#
+        self.X_train = X
+        self.y_train = y
 
     def predict(self, X):
         """
@@ -172,6 +174,15 @@ class KNNClassificationModel(MachineLearningModel):
         predictions (array-like): Predicted values.
         """
         #--- Write your code here ---#
+        predictions = []
+        for x in X:
+            dists = [euclidean_distance(x, x_i) for x_i in self.X_train]
+            k_nearest = np.argsort(dists)[:self.k]
+            #majority vote
+            labels = self.y_train[k_nearest]
+            most_common = Counter(labels).most_common(1)[0][0]
+            predictions.append(most_common)
+        return np.array(predictions)
 
     def evaluate(self, y_true, y_predicted):
         """
@@ -187,3 +198,4 @@ class KNNClassificationModel(MachineLearningModel):
         score (float): Evaluation score.
         """
         #--- Write your code here ---#
+        return np.sum(y_true == y_predicted)
