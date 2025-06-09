@@ -101,8 +101,15 @@ class KNNRegressionModel(MachineLearningModel):
         predictions (array-like): Predicted values.
         """
         #--- Write your code here ---#
-        predicted_labels = [self._predict(x) for x in X]
-        return
+        predictions = []
+        for x in X:
+            dists = [euclidean_distance(x, x_i) for x_i in self.X_train]
+            #find indicies of the k nearest
+            k_nearest = np.argsort(dists)[:self.k]
+            #avgerage their y
+            preds = np.mean(self.y_train[k_nearest])
+            predictions.append(preds)
+        return np.array(predictions)
 
     def evaluate(self, y_true, y_predicted):
         """
@@ -118,6 +125,8 @@ class KNNRegressionModel(MachineLearningModel):
         score (float): Evaluation score.
         """
         #--- Write your code here ---#
+        return np.mean((y_true - y_predicted) ** 2)
+    
 
 class KNNClassificationModel(MachineLearningModel):
     """
