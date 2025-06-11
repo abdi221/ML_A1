@@ -3,6 +3,8 @@ import numpy as np
 from sklearn import datasets as ds
 from collections import Counter
 import math
+from scipy.spatial import KDTree
+
 class MachineLearningModel(ABC):
     @abstractmethod
     def fit(self, X, y):
@@ -23,9 +25,6 @@ def euclidean_distance(point_x, point_y):
     return math.sqrt(distance)
 
 class KNNRegressionModel(MachineLearningModel):
-    """
-    Class for KNN regression model.
-    """
 
     def __init__(self, k):
         self.k = k
@@ -72,5 +71,30 @@ class KNNClassificationModel(MachineLearningModel):
             predictions.append(most_common)
         return np.array(predictions)
 
+    def evaluate(self, y_true, y_predicted):
+        return np.sum(y_true == y_predicted)
+
+
+
+class FastKNNClassificationModel(MachineLearningModel):
+    def __init__(self, k):
+        self.k = k
+        self.tree = None
+        self.y_train = None
+
+    def fit(self, X, y):
+        self.tree = KDTree(X)
+        self.y_train = y
+
+    def predict(self, X):
+        indi = self.tree.query(X, k=self.k)[1] # returns (distance, indicies)
+        predictions = []
+        for indx_list in indi:
+            neighbour = self.y_train[indx_list]
+            most_Common = Counter(neighbour).most_common(1)[0][0]
+            predictions.append(most_Common)
+
+        return np.array(predictions)
+    
     def evaluate(self, y_true, y_predicted):
         return np.sum(y_true == y_predicted)
